@@ -1,0 +1,5 @@
+- Alexandr Kolusov (https://github.com/KolushovAlexandr)
+- Ruzilya Mirgalimova (m_ruzilya@inbox.ru)
+- Ivan Yelizariev (https://github.com/yelizariev)
+- Victor Bykov (https://github.com/BykovVik)
+- Eugene Molotov (https://github.com/em230418)
