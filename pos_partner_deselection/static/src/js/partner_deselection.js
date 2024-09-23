@@ -24,8 +24,8 @@ odoo.define("pos_partner_deselection.partner_deselection", function (require) {
         set_client: function (client) {
             var self = this;
             _super_order.set_client.apply(this, arguments);
-            var customer_deselection_interval = this.pos.config
-                .customer_deselection_interval;
+            var customer_deselection_interval =
+                this.pos.config.customer_deselection_interval;
             if (customer_deselection_interval && client && !self.finalized) {
                 setTimeout(function () {
                     if (self.finalized) return;
