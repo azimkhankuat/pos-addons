@@ -1,36 +1,32 @@
-odoo.define("pos_partner_deselection.partner_deselection", function (require) {
+odoo.define("pos_partner_deselection.partner_deselection", [], function (require) {
     "use strict";
 
-    var models = require("point_of_sale.models");
+    const {Order} = require("@point_of_sale/app/store/models");
+    const {patch} = require("@web/core/utils/patch");
 
-    var _super_posmodel = models.PosModel.prototype;
-    models.PosModel = models.PosModel.extend({
-        initialize: function (session, attributes) {
-            var self = this;
-            _super_posmodel.initialize.apply(this, arguments);
-
-            this.ready.then(function () {
-                if (self.config.customer_deselection_interval) {
-                    _.each(self.get_order_list(), function (ord) {
-                        ord.set_client();
-                    });
-                }
-            });
+    patch(Order.prototype, {
+        setup() {
+            super.setup(...arguments);
+            if (this.partner) {
+                this.set_partner(null);
+            }
         },
-    });
 
-    var _super_order = models.Order.prototype;
-    models.Order = models.Order.extend({
-        set_client: function (client) {
-            var self = this;
-            _super_order.set_client.apply(this, arguments);
-            var customer_deselection_interval =
+        setupCustomerDeselection(interval) {
+            setTimeout(() => {
+                if (!this.finalized) {
+                    this.set_partner(null);
+                }
+            }, interval * 1000);
+        },
+
+        set_partner(partner) {
+            super.set_partner(...arguments);
+
+            const customer_deselection_interval =
                 this.pos.config.customer_deselection_interval;
-            if (customer_deselection_interval && client && !self.finalized) {
-                setTimeout(function () {
-                    if (self.finalized) return;
-                    self.set_client();
-                }, customer_deselection_interval * 1000);
+            if (customer_deselection_interval && partner && !this.finalized) {
+                this.setupCustomerDeselection(customer_deselection_interval);
             }
         },
     });
